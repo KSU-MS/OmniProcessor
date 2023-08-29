@@ -6,32 +6,20 @@ dirinfo = dir();
 data = readtable(filename);
 columns = {'Time (RTC)','Time( milli )','Steering','Accel X','Accel Y','Accel Z','Mag-X', 'Mag-Y','Mag-Z', 'Gyro X','Gyro Y','Gyro Z','FL','FR','RL','RR'};
 %%
-
 TimeRTC = table2array(data(:,1));
-Time = table2array(data(:,2));
-Steering = table2array(data(:,3));
-
-Accel_X = table2array(data(:,4));
-Accel_Y = table2array(data(:,5));
-Accel_Z = table2array(data(:,6));
-%MAG Data left out.
-Gyro_x = table2array(data(:,10));
-Gyro_y = table2array(data(:,11));
-Gyro_z = table2array(data(:,12));
+EpochTime = table2array(data(:,1));
 FL = table2array(data(:,13));
 FR = table2array(data(:,14));
 RL = table2array(data(:,15));
 RR = table2array(data(:,16));
-
-
-
-% quick fix to offset accelermoter Z
-Accel_Z = Accel_Z-9.81;
-% quick fix to make time start at 0
-Time = TimeRTC - TimeRTC(1,1)
-
-% for learning enable this and read output.
-%dt_time= datetime(TimeRTC, 'convertfrom','posixtime');
+Steering = table2array(data(:,3));
+Gyro_x = table2array(data(:,10));
+Gyro_y = table2array(data(:,11));
+Gyro_z = table2array(data(:,12));
+Accel_X = table2array(data(:,4));
+Accel_Y = table2array(data(:,5));
+Accel_Z = table2array(data(:,6));
+ModifiedAccel_Z = Accel_Z-9.81;
 
 
  %dt_time= datetime(EpochTime, 'convertfrom','posixtime');
@@ -41,7 +29,7 @@ dt = 0.01;
 n = length(Time);
 Accel_X_fft = fft(Accel_X,n);
 Accel_Y_fft = fft(Accel_Y,n);
-Accel_Z_fft = fft(Accel_Z,n);
+Accel_Z_fft = fft(ModifiedAccel_Z,n);
 
 FL_fft = fft(FL,n);
 FR_fft = fft(FR,n);
@@ -168,7 +156,7 @@ set(gca,'GridColor',[1 1 1]);
 
 figure(3);
 subplot(3,1,1);
-plot(Time/1000,Accel_Z,'g');
+plot(Time/1000,ModifiedAccel_Z,'g');
 hold on
 ylim([-3,3]);
 grid on
@@ -189,7 +177,7 @@ set(gca,'color',[.25 .25 .25])
 set(gca,'GridColor',[1 1 1]);
 
 subplot(3,1,3);
-plot(Time/1000,Accel_Z,'g');
+plot(Time/1000,ModifiedAccel_Z,'g');
 hold on
 plot(Time/1000,ffilt_z,'w','LineWidth',1.25);
 grid on
@@ -228,7 +216,7 @@ set(gca,'color',[.25 .25 .25])
 set(gca,'GridColor',[1 1 1]);
 
 subplot(3,1,3);
-plot(Time/1000,Accel_Z,'g');
+plot(Time/1000,ModifiedAccel_Z,'g');
 hold on
 plot(Time/1000,ffilt_z,'w','LineWidth',1.25);
 grid on
@@ -301,7 +289,7 @@ hold on
 plot(Time/1000, FR); %FR
 plot(Time/1000, RL); %RL 
 plot(Time/1000, RR); %RR
-legend('Front Left','Front Right','Rear Left','Rear Right');
+legend('Col 3','Col 4','Col 5','Col 6');
 grid on
 
 figure(12);
